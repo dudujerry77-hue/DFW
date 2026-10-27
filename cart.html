@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cart - My Store</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>My Store</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="cart.html">Cart (<span id="cart-count">0</span>)</a>
+    <a href="orders.html">Orders</a>
+  </nav>
+
+  <h2>Your cart</h2>
+  <ul id="cart"></ul>
+  <p id="total"></p>
+
+  <form id="checkout" hidden>
+    <input id="customer-name" placeholder="Your name" required />
+    <button type="submit">Place order</button>
+  </form>
+  <p id="message"></p>
+
+  <script src="store.js"></script>
+  <script>
+    var list = document.getElementById("cart");
+    var form = document.getElementById("checkout");
+    var message = document.getElementById("message");
+
+    // Draw the cart. Called again after every change.
+    function draw() {
+      var cart = getCart();
+      list.textContent = "";
+      var total = 0;
+      cart.forEach(function (line) {
+        total += line.price * line.quantity;
+        var row = document.createElement("li");
+        var text = document.createElement("span");
+        text.textContent = line.name + " x " + line.quantity + " = " + line.price * line.quantity + " " + (line.currency || "");
+        row.appendChild(text);
+        var remove = document.createElement("button");
+        remove.textContent = "Remove";
+        remove.onclick = function () { saveCart(getCart().filter(function (l) { return l.sku !== line.sku; })); draw(); };
+        row.appendChild(remove);
+        list.appendChild(row);
+      });
+      document.getElementById("total").textContent = cart.length ? "Total: " + total + " " + (cart[0].currency || "") : "Your cart is empty.";
+      form.hidden = !cart.length;
+    }
+    draw();
+
+    // Place the order: send it to server.js, which forwards it to Dasenter with your Dasenter API key.
+    form.onsubmit = function (event) {
+      event.preventDefault();
+      var cart = getCart();
+      var total = cart.reduce(function (sum, l) { return sum + l.price * l.quantity; }, 0);
+      var order = {
+        externalId: "WEB-" + Date.now(),
+        customer: { name: document.getElementById("customer-name").value },
+        items: cart.map(function (l) { return { sku: l.sku, name: l.name, quantity: l.quantity, price: l.price }; }),
+        total: total,
+        currency: cart[0].currency || "NGN"
+      };
+      message.textContent = "Sending your order...";
+      fetch(SERVER + "/dasenter/orders", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(order)
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (body) {
+          if (body.status !== "ok") { message.textContent = "Could not place the order: " + body.error; return; }
+          var orders = getOrders();
+          orders.unshift({ id: order.externalId, date: new Date().toLocaleString(), total: total, currency: order.currency, items: order.items });
+          saveOrders(orders);
+          saveCart([]);
+          window.location.href = "orders.html";
+        })
+        .catch(function () { message.textContent = "Could not reach server.js. Is it running?"; });
+    };
+  </script>
+</body>
+</html>

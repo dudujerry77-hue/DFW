@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Store</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>My Store</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="cart.html">Cart (<span id="cart-count">0</span>)</a>
+    <a href="orders.html">Orders</a>
+  </nav>
+
+  <ul id="products"></ul>
+
+  <!-- The JavaScript SDK snippet.
+       Replace the values below with the ones on your JavaScript SDK setup page in the Dasenter dashboard.
+       Dasenter reads this block from the page, so keep every value a plain quoted string.
+       The script address and apiBase are the address of your Dasenter server. -->
+  <script src="http://localhost:3001/sdk/nexora.js"></script>
+  <script>
+    Dasenter.init({
+      storeId: "PASTE_YOUR_STORE_ID",
+      publicKey: "PASTE_YOUR_JAVASCRIPT_SDK_PUBLIC_KEY",
+      apiBase: "http://localhost:3001"
+    });
+    Dasenter.trackPageView();
+  </script>
+
+  <script src="store.js"></script>
+  <script>
+    // Show the products Dasenter pushed to server.js. One card per product.
+    fetch(SERVER + "/dasenter/store-products")
+      .then(function (r) { return r.json(); })
+      .then(function (body) {
+        var list = document.getElementById("products");
+        if (!body.products.length) list.textContent = "No products yet. Push some from Dasenter.";
+        body.products.forEach(function (p) {
+          var card = document.createElement("li");
+
+          // The picture. Dasenter pushes the pictures as a list: p.images = ["https://...", ...]. Show the first one.
+          var picture = p.images && p.images[0];
+          if (picture) {
+            var img = document.createElement("img");
+            img.src = picture;
+            img.alt = p.name;
+            card.appendChild(img);
+          }
+
+          // The name and the price.
+          var name = document.createElement("h3");
+          name.textContent = p.name;
+          card.appendChild(name);
+          var price = document.createElement("p");
+          price.className = "price";
+          price.textContent = p.price + " " + (p.currency || "");
+          card.appendChild(price);
+
+          // A button. To add another button, copy these lines and change the text and what happens on click.
+          var add = document.createElement("button");
+          add.textContent = "Add to cart";
+          add.onclick = function () {
+            addToCart(p);
+            add.textContent = "Added";
+            setTimeout(function () { add.textContent = "Add to cart"; }, 1000);
+          };
+          card.appendChild(add);
+
+          list.appendChild(card);
+        });
+      });
+  </script>
+</body>
+</html>
