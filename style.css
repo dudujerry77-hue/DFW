@@ -1,113 +1,69 @@
 body {
+  margin: 0;
   font-family: system-ui, sans-serif;
-  max-width: 640px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+  background: #f7f7f8;
   color: #1a1a1a;
 }
 
-h1 {
-  font-size: 1.5rem;
+.site-header {
+  background: #111;
+  color: #fff;
+  padding: 1.5rem 2rem;
 }
 
-/* The product cards. Change any value here and reload the page. */
+.site-header h1 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+main {
+  max-width: 640px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.note {
+  color: #555;
+  line-height: 1.5;
+}
+
 #products {
   list-style: none;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;
 }
 
-#products li {
+.product {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.75rem;
+  align-items: center;
+  gap: 1rem;
+  background: #fff;
   border: 1px solid #e4e4e7;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
-#products img {
-  width: 100%;
-  height: 140px;
+.product-img {
+  width: 64px;
+  height: 64px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 6px;
   background: #e4e4e7;
 }
 
-#products h3 {
-  margin: 0;
-  font-size: 1rem;
+.product-img.no-img {
+  display: block;
 }
 
-#products .price {
-  margin: 0;
-  color: #52525b;
+.product-info {
+  flex: 1;
 }
 
-#products a,
-button {
+.order-btn {
   background: #111;
   color: #fff;
-  text-align: center;
   text-decoration: none;
   padding: 0.5rem 1rem;
-  border: 0;
   border-radius: 6px;
-  cursor: pointer;
-}
-
-#products a:hover,
-button:hover {
-  background: #333;
-}
-
-/* The menu, the cart and the orders. */
-nav {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-nav a {
-  color: #111;
-  font-weight: 600;
-}
-
-#cart,
-#orders {
-  list-style: none;
-  padding: 0;
-}
-
-#cart li,
-#orders li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  border: 1px solid #e4e4e7;
-  border-radius: 12px;
-}
-
-#orders li {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.25rem;
-}
-
-#orders h3,
-#orders p {
-  margin: 0;
-}
-
-input {
-  padding: 0.5rem;
-  border: 1px solid #d4d4d8;
-  border-radius: 6px;
-  margin-right: 0.5rem;
+  font-size: 0.9rem;
 }

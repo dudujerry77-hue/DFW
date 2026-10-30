@@ -1,44 +1,52 @@
-// app.js — your own code for the Frontend SDK.
-// It is loaded after the Dasenter snippet in index.html, so Dasenter is already set up here.
+// Dtest's own code: shows the store's products (image, name, price) from Dasenter and an Order button
+// that opens Dasenter's hosted checkout for that product. Dasenter.init runs first, in index.html.
 
-// Must be the same Store ID you put in index.html.
-var STORE_ID = 'PASTE_YOUR_STORE_ID';
+// This store's Dasenter ID — only used to build the checkout link below.
+var STORE_ID = 'cmu6q0t6j0001l2agtxrdjc4v';
+// Where your Dasenter server lives — the checkout link points here.
+var DASENTER = 'https://app.dasenter.com';
 
-// Your Dasenter server's address, taken from the SDK script tag in index.html so you only set it once, there.
-var DASENTER = new URL(document.querySelector('script[src$="/sdk/nexora.js"]').src).origin;
-
-// Optional: report a product this page shows. It goes to "Detected from your website" on the Products page
-// for you to review — it never changes your real catalog by itself. Uncomment to try it.
-// Dasenter.trackProduct({ sku: 'DEMO-001', name: 'Demo product', price: 1000, currency: 'NGN' });
-
-// Show your real catalog from Dasenter, each product with its image and an Order button.
+// Ask Dasenter for this store's products. The SDK sends GET /api/sdk/products with the public key
+// (set in Dasenter.init in index.html). It returns a promise; .then() runs when the list arrives.
+// `products` is a list of { id, sku, name, price, currency, imageUrl, quantity }.
 Dasenter.getProducts().then(function (products) {
-  // each product: { id, sku, name, price, currency, imageUrl, quantity }
+  // The empty <ul id="products"> in index.html — the cards get added here.
   var list = document.getElementById('products');
 
+  // No products (or the request failed, which the SDK turns into an empty list): say so and stop.
   if (!products.length) {
     list.innerHTML = '<li>No products yet.</li>';
     return;
   }
 
+  // Build one card for each product `p`.
   products.forEach(function (p) {
+    // The card itself: an <li> styled by .product in style.css.
     var item = document.createElement('li');
+    item.className = 'product';
 
+    // The product image. alt = the name, for accessibility.
     var img = document.createElement('img');
+    img.className = 'product-img';
     img.alt = p.name;
-    img.width = 64;
-    img.height = 64;
+    // Use the product's image if it has one; otherwise .no-img shows the grey placeholder square.
     if (p.imageUrl) img.src = p.imageUrl;
+    else img.classList.add('no-img');
 
-    var info = document.createElement('span');
-    info.textContent = ' ' + p.name + ' — ' + p.currency + ' ' + p.price + ' ';
+    // The text, e.g. "Rice — NGN 12500". textContent (not innerHTML) so a product name can't inject HTML.
+    var info = document.createElement('div');
+    info.className = 'product-info';
+    info.textContent = p.name + ' — ' + p.currency + ' ' + p.price;
 
-    // Dasenter Checkout takes the order for you — a plain link, no server and no key on your site.
+    // The Order button: a plain link to Dasenter's hosted checkout for this product (no key needed).
+    // encodeURIComponent makes the SKU safe to put in a URL; quantity=1 orders one item.
     var order = document.createElement('a');
+    order.className = 'order-btn';
     order.textContent = 'Order';
     order.href = DASENTER + '/checkout/' + STORE_ID + '?sku=' + encodeURIComponent(p.sku) + '&quantity=1';
-    order.target = '_blank';
+    order.target = '_blank'; // open checkout in a new tab
 
+    // Put the image, text and Order button inside the card, then add the card to the page.
     item.appendChild(img);
     item.appendChild(info);
     item.appendChild(order);

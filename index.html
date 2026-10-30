@@ -3,28 +3,34 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>My Store</title>
+<title>Dtest Restaurant</title>
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>My Store</h1>
-  <ul id="products"></ul>
+  <header class="site-header">
+    <h1>Dtest Restaurant</h1>
+  </header>
 
-  <!-- 1. The Dasenter snippet.
-       Replace the values below with the ones on your Frontend SDK setup page in the Dasenter dashboard.
-       Dasenter reads this block from the page, so keep every value a plain quoted string.
-       The script address and apiBase are the address of your Dasenter server. -->
-  <script src="http://localhost:3001/sdk/nexora.js"></script>
-  <script>
-    Dasenter.init({
-      storeId: "PASTE_YOUR_STORE_ID",
-      publicKey: "PASTE_YOUR_PUBLIC_KEY",
-      apiBase: "http://localhost:3001"
-    });
-    Dasenter.trackPageView();
-  </script>
+  <main>
+    <p class="note">This is a real test page for the Dtest store — loading it in a browser is what actually verifies the JavaScript SDK integration.</p>
+    <ul id="products"></ul>
+  </main>
 
-  <!-- 2. Your own JavaScript file. A Frontend SDK site needs one: it shows your products and links to checkout. -->
-  <script src="app.js"></script>
+<script src="https://app.dasenter.com/sdk/dasenter.js"></script>
+<script>
+  Dasenter.init({
+    storeId: "cmu6q0t6j0001l2agtxrdjc4v",
+    publicKey: "nx_public_dDKxOGmPXYXeedQxwp4qRA",
+    apiBase: "https://app.dasenter.com"
+  });
+
+  Dasenter.trackPageView();
+</script>
+
+</script>
+<script src="app.js"></script>
+
+
 </body>
 </html>
+
